@@ -1,18 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
+const fs = require("fs");
+const path = require("path");
+const axios = require("axios");
 
 const mdFiles = [];
 
 // si es¡xiste el archivo
 const fileExists = (ruta) => {
   return fs.existsSync(ruta);
-}
+};
 
 // si es absoluta
 const checkPath = (ruta) => {
-  return path.isAbsolute(ruta)
-}
+  return path.isAbsolute(ruta);
+};
 
 //convierte a absoluta
 const getAbsolutePath = (relativePath) => {
@@ -21,15 +21,14 @@ const getAbsolutePath = (relativePath) => {
     if (absolutePath) {
       resolve(absolutePath);
     } else {
-      reject('No se pudo obtener la ruta absoluta.');
+      reject("No se pudo obtener la ruta absoluta.");
     }
   });
-}
-
+};
 
 // archivo con terminacion .m
 const isMdFile = (filePath) => {
-  return path.extname(filePath) === '.md';
+  return path.extname(filePath) === ".md";
 };
 
 // es directorio
@@ -57,58 +56,78 @@ const isDirectory = (filePath) => {
   });
 };
 
-
-
-
-const checkDir= (dir)  => {
+const checkDir = (dir) => {
   const stats = fs.lstatSync(dir);
-  if (stats.isFile() && path.extname(dir) === '.md') {
+  if (stats.isFile() && path.extname(dir) === ".md") {
     mdFiles.push(dir);
   } else if (stats.isDirectory()) {
     const files = fs.readdirSync(dir);
-    files.forEach(file => {
+    files.forEach((file) => {
       const filePath = path.join(dir, file);
       checkDir(filePath);
     });
   }
   return mdFiles;
-}
+};
 
-
-
-const extractLinks = (arrfiles) => {
-  // console.log("ruta", ruta);
+const extractLinks = (file) => {
+  console.log("ruta app", file);
   // console.log('Sí en tra a extractLinks')
   return new Promise((resolve, reject) => {
     const links = [];
-    arrfiles.forEach(file => {
-
-     fs.readFile(`${file}`, 'utf-8', (error, fileContents) => {
-      if (error) {
-        return reject(error);
-      } else {
-
-        const regex = /\[(.*)\]\((https?:\/\/\S+)\)/g;
-
-        let match;
-        while ((match = regex.exec(fileContents))) {
-          links.push({
-            text: match[1],
-            href: match[2],
-            file: `${file}`
-          });
-        }
-        //console.log("links app",links)
-
-        resolve(links);
-      }
-    });
-
-   });
-
     
+     // console.log("file", file)
+      fs.readFile(`${file}`, "utf-8", (error, fileContents) => {
+        if (error) {
+          return reject(error);
+        } else {
+          const regex = /\[(.*)\]\((https?:\/\/\S+)\)/g;
+
+          let match;
+          while ((match = regex.exec(fileContents))) {
+            links.push({
+              text: match[1],
+              href: match[2],
+              file: `${file}`,
+            });
+          }
+          //console.log("links app",links)
+
+         resolve(links); 
+        }
+      });
+  
   });
+ 
 };
+
+function planarArray(arr) {
+  return new Promise((resolve, reject) => {
+    const flatArr = arr.reduce((acc, val) => acc.concat(val), []);
+    resolve(flatArr);
+  });
+}
+
+/*function planarArray(arr) {
+  // Obtenemos el número total de elementos del array
+  const totalElements = arr.length * arr[0].length;
+
+  // Creamos un nuevo array unidimensional con el tamaño necesario
+  const flatArr = new Array(totalElements);
+
+  // Copiamos los elementos del array original en el nuevo array unidimensional
+  let index = 0;
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr[i].length; j++) {
+      flatArr[index] = arr[i][j];
+      index++;
+    }
+  }
+
+  // Devolvemos el nuevo array unidimensional
+  return flatArr;
+}*/
+
 
 // Extract links devuelve lo siguiente
 // [
@@ -124,72 +143,54 @@ const extractLinks = (arrfiles) => {
 //   }
 // ]
 
-
-
-
 const validateLinks = (links) => {
   // console.log('Sí entra a validateLinks')
   return new Promise((resolve, reject) => {
     axios
-    .get(links)
-    .then((response) => {
+      .get(links)
+      .then((response) => {
+        const contStatus = response.status;
+        const contStatusText = response.statusText;
 
-      const contStatus = response.status;
-      const contStatusText = response.statusText;
-
-      resolve({ contStatus, contStatusText })
-    })
-    .catch((error) => error)
-  })
+        resolve({ contStatus, contStatusText });
+      })
+      .catch((error) => error);
+  });
 };
 
-
-
-
 const processLinks = (linkObjects) => {
-
-  return new Promise((resolve, reject) => {
-    const arrLinks = linkObjects.map(link => {
-        // console.log("linkss", link)
-        //const linkHref = link.href
+  const arrLinks = linkObjects.map((link) => {
+    return new Promise((resolve, reject) => {
+      // console.log("linkss", link)
+      //const linkHref = link.href
 
       validateLinks(link.href)
+        .then((result) => {
+          //console.log("linkHref app", result)
+          const linkValidate = {
+            ...link,
+            ...result,
+          };
+          //og(linkValidate)
+          resolve(linkValidate);
+        })
 
-      .then((result) => {
-
-        //console.log("linkHref app", result)
-       const linkValidate = {
-        ...link,
-        ...result
-      }
-    // return linkValidate
-      console.log("link validateejkds",linkValidate)
-      
-     // resolve(linkValidate)
-     
-      
-    })
-
-        /*.catch((err) => {
-        //console.log(err.errno);
-        const objectValidate = {
+        .catch((error) => {
+          //console.log(err.errno);
+          const objectValidate = {
           ...link,
-          status: err.response ? 404 : 'ERROR',
+          status: error.response ? 404 : 'ERROR',
           ok: "fail"
-        }*/
-     
-      //return arrLinks 
+        }
+        reject(objectValidate)
+          
+          //return arrLinks
+        });
     });
+  });
 
-     console.log("arrpromesa",arrLinks);
-
-    
-
-  })
-  
-
-  
-}
+  return Promise.all(arrLinks);
+};
 
 /*
 const processLinks = (arrayLinks) => {
@@ -270,6 +271,7 @@ module.exports = {
   extractLinks,
   validateLinks,
   processLinks,
-  checkDir
+  checkDir,
+  planarArray
   
 };
