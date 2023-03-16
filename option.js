@@ -14,4 +14,6 @@ const md_Links = (pathname, options) => {
             })
     }
 }
-
+module.exports = {
+    optionTwo,
+  };

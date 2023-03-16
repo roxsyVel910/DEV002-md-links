@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const { mdLinks } = require('./index.js');
 
-mdLinks('./carpeta/README.md')
+mdLinks('./carpeta/README.md' , " ")
 
 
 .then((resp) => console.log("resp cli",resp))
