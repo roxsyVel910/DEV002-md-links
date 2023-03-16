@@ -71,7 +71,7 @@ const checkDir = (dir) => {
 };
 
 const extractLinks = (file) => {
-  console.log("ruta app", file);
+  //console.log("ruta app", file);
   // console.log('Sí en tra a extractLinks')
   return new Promise((resolve, reject) => {
     const links = [];
@@ -101,12 +101,6 @@ const extractLinks = (file) => {
  
 };
 
-function planarArray(arr) {
-  return new Promise((resolve, reject) => {
-    const flatArr = arr.reduce((acc, val) => acc.concat(val), []);
-    resolve(flatArr);
-  });
-}
 
 /*function planarArray(arr) {
   // Obtenemos el número total de elementos del array
@@ -144,24 +138,58 @@ function planarArray(arr) {
 // ]
 
 const validateLinks = (links) => {
-  // console.log('Sí entra a validateLinks')
-  return new Promise((resolve, reject) => {
-    axios
-      .get(links)
-      .then((response) => {
-        const contStatus = response.status;
-        const contStatusText = response.statusText;
+   //console.log('Sí entra a validateLinks', links)
 
-        resolve({ contStatus, contStatusText });
+    return axios
+      .get(links)
+      .then((result) => {
+        const objectValidate = {
+          
+          status: result.status,
+          ok: result.statusText
+        }
+        //console.log(objectValidate)
+        return objectValidate
       })
-      .catch((error) => error);
-  });
+      .catch((error) => {
+        const objectValidate = {
+          
+          status: error.response ? 404 : 'ERROR',
+          ok: "fail"
+        }
+        //console.log(objectValidate)
+        return objectValidate
+        
+      });
+      //fail
+
 };
 
 const processLinks = (linkObjects) => {
-  const arrLinks = linkObjects.map((link) => {
-    return new Promise((resolve, reject) => {
-      // console.log("linkss", link)
+  //console.log(linkObjects)
+ 
+    return Promise.all(
+      linkObjects.map((link) => {
+        const validate = validateLinks(link.href)
+        return validate.then((resultas) => {
+          
+          const linkValidate = {
+            ...link,
+            ...resultas
+
+          };
+          //console.log(linkValidate)
+          return linkValidate;
+         })
+
+      })
+
+     )
+
+}
+    /*((resolve, reject) => {
+      const arrLinks = linkObjects.map((link) => {
+     // console.log("linkss", link)
       //const linkHref = link.href
 
       validateLinks(link.href)
@@ -171,26 +199,28 @@ const processLinks = (linkObjects) => {
             ...link,
             ...result,
           };
-          //og(linkValidate)
+          //console.log(linkValidate)
+          
           resolve(linkValidate);
         })
 
         .catch((error) => {
-          //console.log(err.errno);
-          const objectValidate = {
+          //console.log(err.error);
+          /*const objectValidate = {
           ...link,
           status: error.response ? 404 : 'ERROR',
           ok: "fail"
         }
-        reject(objectValidate)
+        reject(error)
           
           //return arrLinks
         });
-    });
+       
+        
+    })
   });
-
-  return Promise.all(arrLinks);
-};
+   
+};*/
 
 /*
 const processLinks = (arrayLinks) => {
@@ -272,6 +302,6 @@ module.exports = {
   validateLinks,
   processLinks,
   checkDir,
-  planarArray
+
   
 };

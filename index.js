@@ -5,14 +5,9 @@ const {
   fileExists,
   checkPath,
   getAbsolutePath,
-  isMdFile,
-  readDir,
-  isDirectory,
   extractLinks,
-  validateLinks,
   processLinks,
   checkDir,
-  planarArray
 } = require("./app");
 
 const mdLinks = (path, options) => {
@@ -22,18 +17,20 @@ const mdLinks = (path, options) => {
         getAbsolutePath(path)
           .then((absolutePath) => {
             const files = checkDir(absolutePath);
-            const renderFile = files.map((file) => extractLinks(file))
-            const promesa = Promise.all(renderFile)
-
+            const renderFile = files.map((file) => extractLinks(file));
+            const promesa = Promise.all(renderFile);
             //console.log("file", promesa)
             promesa.then((result) => {
-              planarArray(result)
-              .then()
-              console.log("plana array",planarArray(result))
-              })
-          
-
+              const planarArray = result.reduce(
+                (acc, val) => acc.concat(val),
+                []
+              );
+             // console.log("plana arr", planarArray);
+             processLinks(planarArray).then((result) => console.log("resulto",result) ) 
+             .catch((error)=> console.log("error",error));
+             // console.log("validate",  validate)
               
+            });
           })
           .catch((error) => console.error(error));
       }

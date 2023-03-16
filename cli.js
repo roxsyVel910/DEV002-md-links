@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 const { mdLinks } = require('./index.js');
 
-mdLinks('./carpeta')
+mdLinks('./carpeta/README.md')
 
 
-.then((resp) => console.log(resp))
+.then((resp) => console.log("resp cli",resp))
 
 .catch((error) => {
     console.log(error)
