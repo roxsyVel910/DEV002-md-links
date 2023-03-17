@@ -1,11 +1,11 @@
 {
-  "name": "rvq_md-links",
+  "name": "rvqmdlinks",
   "version": "0.1.0",
   "engines": {
     "node": ">=16.x"
   },
   "bin": {
-    "mycli": "cli.js"
+    "rvqmdlinks": "cli.js"
   },
   "keywords": [
     "cli"

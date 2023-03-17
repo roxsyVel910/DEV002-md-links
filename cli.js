@@ -1,40 +1,18 @@
 #!/usr/bin/env node
-const { mdLinks } = require('./index.js');
+//console.log('hello wordl')
 
-mdLinks('./carpeta/README.md' , " ")
+const process = require('process');
+//const { mdLinks } = require('./index.js');
+//console.log(process)
+//argv  argumentos que vamos a escribir en la terminal
 
-
-.then((resp) => console.log("resp cli",resp))
-
-.catch((error) => {
-    console.log(error)
-})
-
-
-
-
-
+const route = process.argv[2]
+console.log(route)
+const opcion1 = process.argv[3]
+console.log(opcion1)
+const opcion2 = process.argv[4]
+console.log(opcion2)
 
 
 
-// const [,, ...args] = process.argv
-
-// console.log(`hola mundo ${args}`)
-
-
-
-// const { argv } = require('process');
-// const { mdLinks } = require('./promise');
-
-// // Interface to get the arguments passed to the
-// // node.js process when run in the command line
-// let path = argv[2];
-// let optionOne = argv[3];
-// let optionTwo = argv[4];
-// let options = [optionOne, optionTwo];
-
-
-// mdLinks(path, options);
-
-// module.exports = { mdLinks }
 
