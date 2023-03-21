@@ -8,6 +8,7 @@ const {
   extractLinks,
   processLinks,
   checkDir,
+  statsValidate,
 } = require("./app");
 // mdLinks(path, options)
 
@@ -15,45 +16,53 @@ const mdLinks = (path, options = {validate: false, stats: false }) => {
 
     return new Promise((resolve, reject) => {
       
-     
+     console.log("lnks")
            if (fileExists(path)) {
               if (!checkPath(path)) {
                 getAbsolutePath(path)
                   .then((absolutePath) => {
                     const files = checkDir(absolutePath);
                     const renderFile = files.map((file) => extractLinks(file));
+                    
                     const promesa = Promise.all(renderFile);
-                    //console.log("file", promesa)
                     promesa.then((result) => {
+                      //console.log("resul",result.href)
                       const planarArray = result.reduce(
                         (acc, val) => acc.concat(val),
                         []
                       );
-                     // console.log("plana arr", planarArray);
-                     processLinks(planarArray)
+                     planarArray.forEach(element => {
+                      console.log("Links",element.href)
+                     });
+                   /*  processLinks(planarArray)
                      .then((result) => {
                       resolve("mensaje", result)
                       }) 
-                     .catch((error)=> console.log("error",error));
+                     .catch((error)=> console.log("error",error));*/
                      // console.log("validate",  validate)
                       
-                    });
-                  })
-                  .catch((error) => console.error(error));
-              }
-
-              
-            }  
+                    
             //reject  
             if (options.validate === true && options.stats === true) {
-              console.log("elegiste ambas opciones") 
+              console.log("dos opciones") 
+              const statc = statsValidate(planarArray)
+              console.log("stact",statc)
+
+
             }
             else if (options.validate === false && options.stats === true) {
-              console.log("elegiste la opción stats")
+              console.log(" opcion stats")
             }
             else if (options.validate === true && options.stats === false) {
-              console.log("elegiste la opción validate ")
+              console.log("opcion validate ")
             }
+
+          });
+        })
+    }
+
+    
+  } 
 
 
              else {
