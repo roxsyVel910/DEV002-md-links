@@ -187,15 +187,7 @@ const processLinks = (linkObjects) => {
      )
 
 }
-const statsValidate = (arrayObjeto) => {
-  const uniqueLink = new Set([...arrayObjeto].map(element => element.href));
-  const brokenLink = arrayObjeto.filter(element => element.ok === 'fail')
-  return {
-    Total: arrayObjeto.length,
-    Unique: uniqueLink.size,
-    Broken: brokenLink.length
-  }
-}
+
 
     /*((resolve, reject) => {
       const arrLinks = linkObjects.map((link) => {
