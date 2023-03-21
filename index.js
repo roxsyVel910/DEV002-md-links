@@ -14,9 +14,8 @@ const {
 const mdLinks = (path, options = {validate: false, stats: false }) => {
 
     return new Promise((resolve, reject) => {
-      resolve(5)
-        if (options) {
-            console.log('tienes una option')
+      
+     
            if (fileExists(path)) {
               if (!checkPath(path)) {
                 getAbsolutePath(path)
@@ -33,7 +32,7 @@ const mdLinks = (path, options = {validate: false, stats: false }) => {
                      // console.log("plana arr", planarArray);
                      processLinks(planarArray)
                      .then((result) => {
-                      resolve(result)
+                      resolve("mensaje", result)
                       }) 
                      .catch((error)=> console.log("error",error));
                      // console.log("validate",  validate)
@@ -42,13 +41,26 @@ const mdLinks = (path, options = {validate: false, stats: false }) => {
                   })
                   .catch((error) => console.error(error));
               }
+
+              
             }  
             //reject  
-                 
-            } else {
-                console.log('Please enter a valid option');
+            if (options.validate === true && options.stats === true) {
+              console.log("elegiste ambas opciones") 
+            }
+            else if (options.validate === false && options.stats === true) {
+              console.log("elegiste la opción stats")
+            }
+            else if (options.validate === true && options.stats === false) {
+              console.log("elegiste la opción validate ")
+            }
+
+
+             else {
+                console.log('Please error');
                 //console.log(path)
             }
+            
         
     })
 

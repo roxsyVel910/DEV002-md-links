@@ -16,14 +16,19 @@ const opcion2 = process.argv[4]
 
 if (route) {
     if (opcion1 === undefined && opcion2 === undefined) {
-      const promesas = mdLinks(route, { validate: false, stats: false });
-      console.log("promesas", promesas)
-
-            promesas.then(result => console.log("result",result)) .catch((error) => console.log("error",error))
-
-           // console.log("mostrar solo solo ruta")
-    }else {
-        console.log('error')
+        mdLinks(route, { validate: false, stats: false })
+            .then(result => result)
+    } else if (opcion1 === '--validate' && opcion2 === undefined) {
+        mdLinks(route, { validate: true, stats: false })
+            .then(result => result)
+    } else if (opcion1 === '--stats' && opcion2 === undefined) {
+        mdLinks(route, { validate: false, stats: true })
+            .then(result => result)
+    } else if ((opcion1 === '--validate' && opcion2 === '--stats') || (opcion1 === '--stats' && opcion2 === '--validate')) {
+        mdLinks(route, { validate: true, stats: true })
+            .then(result => result)
+    } else {
+        console.log('revisa las parametros')
     }
 }
 
