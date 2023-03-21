@@ -30,6 +30,7 @@ const mdLinks = (path, options = { validate: false, stats: false }) => {
             planarArray.forEach((element) => {
               // console.log("Links",element)
             });
+
             if (options.validate === false && options.stats === false) {
               resolve(planarArray);
             }
@@ -43,8 +44,9 @@ const mdLinks = (path, options = { validate: false, stats: false }) => {
             // console.log("validate",  validate)
 
             //reject
+            processLinks(planarArray).then((links) => {
             if (options.validate === true && options.stats === true) {
-              processLinks(planarArray).then((links) => {
+             
                 // Contar el total de enlaces
                 const totalLinks = links.length;
                 //console.log(`Total: ${totalLinks}`);
@@ -57,20 +59,33 @@ const mdLinks = (path, options = { validate: false, stats: false }) => {
                 const uniqueLinks = [
                   ...new Set(links.map((link) => link.href)),
                 ];
-               // console.log(`Unique : ${uniqueLinks.length}`);
+                // console.log(`Unique : ${uniqueLinks.length}`);
 
                 const results = {
                   total: totalLinks,
                   broken: brokenLinks.length,
-                  unique: uniqueLinks.length
-                }
-                resolve( results)
-              });
+                  unique: uniqueLinks.length,
+                };
+                resolve(results);
+              
             } else if (options.validate === false && options.stats === true) {
-              console.log(" opcion stats");
+              const totalLinks = links.length;
+              const brokenLinks = links.filter((link) => link.status !== 200);
+              const results = {
+                total: totalLinks,
+                broken: brokenLinks.length
+              };
+              resolve(results);
+
+              //console.log(" opcion stats");
             } else if (options.validate === true && options.stats === false) {
-              console.log("opcion validate ");
+              //console.log("links", links)
+              resolve(links);
+              
+
+              
             }
+          });
           });
         });
       }
